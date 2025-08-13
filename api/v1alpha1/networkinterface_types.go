@@ -94,7 +94,6 @@ type NetworkInterfaceStatus struct {
 	// DHCPDeactivated indicates whether DHCP client configuration is disabled for this interface.
 	// When true, no DHCP client will be configured even if no IP is assigned.
 	// When false or unset (default), DHCP client will be configured if no IP is assigned.
-	// This is derived from the VSphereDistributedNetwork's IPAssignmentMode configuration.
 	// +optional
 	DHCPDeactivated bool `json:"dhcpDeactivated,omitempty"`
 	// ExternalID is a network provider specific identifier assigned to the network interface.
@@ -131,11 +130,6 @@ type NetworkInterfaceSpec struct {
 	NetworkName string `json:"networkName,omitempty"`
 	// Type is the type of NetworkInterface. Supported values are vmxnet3.
 	Type NetworkInterfaceType `json:"type,omitempty"`
-	// SelfManagedIPAM indicates that IP address management is handled by the consuming resource.
-	// When true, no DHCP client will be configured even if no IP is assigned.
-	// When false or unset, normal DHCP client configuration will occur if no IP is assigned.
-	// +optional
-	SelfManagedIPAM bool `json:"selfManagedIPAM,omitempty"`
 	// ProviderRef is a reference to a provider specific network interface object
 	// that specifies the network interface configuration.
 	// If unset, default configuration is assumed.
