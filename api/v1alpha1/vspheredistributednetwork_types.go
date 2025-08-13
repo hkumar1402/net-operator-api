@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Broadcom. All Rights Reserved.
+// Copyright (c) 2020-2025 Broadcom. All Rights Reserved.
 // Broadcom Confidential. The term "Broadcom" refers to Broadcom Inc.
 // and/or its subsidiaries.
 
@@ -61,17 +61,17 @@ type VSphereDistributedNetworkSpec struct {
 	IPAssignmentMode IPAssignmentModeType `json:"ipAssignmentMode,omitempty"`
 
 	// IPPools references list of IPPool objects. This field should only be set when using
-	// IPAssignmentModeStaticPool. For all other modes (DHCP, SelfManaged), this should be set
+	// IPAssignmentModeStaticPool. For all other modes (IPAssignmentModeDHCP, IPAssignmentModeSelfManaged), this should be set
 	// to an empty list.
 	IPPools []IPPoolReference `json:"ipPools"`
 
 	// Gateway setting to use for network interfaces. This field should only be set when using
-	// IPAssignmentModeStaticPool. For all other modes (DHCP, SelfManaged), this should be set
+	// IPAssignmentModeStaticPool. For all other modes (IPAssignmentModeDHCP, IPAssignmentModeSelfManaged), this should be set
 	// to an empty string.
 	Gateway string `json:"gateway"`
 
 	// SubnetMask setting to use for network interfaces. This field should only be set when using
-	// IPAssignmentModeStaticPool. For all other modes (DHCP, SelfManaged), this should be set
+	// IPAssignmentModeStaticPool. For all other modes (IPAssignmentModeDHCP, IPAssignmentModeSelfManaged), this should be set
 	// to an empty string.
 	SubnetMask string `json:"subnetMask"`
 }
