@@ -91,11 +91,6 @@ type NetworkInterfaceStatus struct {
 	IPConfigs []IPConfig `json:"ipConfigs,omitempty"`
 	// MacAddress setting for the network interface.
 	MacAddress string `json:"macAddress,omitempty"`
-	// DHCPDeactivated indicates whether DHCP client configuration is disabled for this interface.
-	// When true, no DHCP client will be configured even if no IP is assigned.
-	// When false or unset (default), DHCP client will be configured if no IP is assigned.
-	// +optional
-	DHCPDeactivated bool `json:"dhcpDeactivated,omitempty"`
 	// ExternalID is a network provider specific identifier assigned to the network interface.
 	ExternalID string `json:"externalID,omitempty"`
 	// NetworkID is an network provider specific identifier for the network backing the network
@@ -109,6 +104,15 @@ type NetworkInterfaceStatus struct {
 	// network interface on the backing network. It is only valid on requested node and is set
 	// only if port allocation was requested.
 	ConnectionID string `json:"connectionID,omitempty"`
+	// IPAssignmentMode indicates how IP addresses are assigned to this interface.
+	// When unset:
+	// - If IP is assigned, it is assumed to be NetworkInterfaceIPAssignmentModeStaticPool.
+	// - If IP is unassigned, it is assumed to be NetworkInterfaceIPAssignmentModeDHCP.
+	// When set to NetworkInterfaceIPAssignmentModeStaticPool, indicates IP is assigned from a static pool.
+	// When set to NetworkInterfaceIPAssignmentModeDHCP, indicates IP should be obtained via DHCP.
+	// When set to NetworkInterfaceIPAssignmentModeNone, indicates no IP assignment should be performed.
+	// +optional
+	IPAssignmentMode NetworkInterfaceIPAssignmentMode `json:"ipAssignmentMode,omitempty"`
 }
 
 type NetworkInterfaceType string
@@ -116,6 +120,20 @@ type NetworkInterfaceType string
 const (
 	// NetworkInterfaceTypeVMXNet3 is for a VMXNET3 device.
 	NetworkInterfaceTypeVMXNet3 = NetworkInterfaceType("vmxnet3")
+)
+
+// NetworkInterfaceIPAssignmentMode defines how IP addresses are assigned to a network interface
+type NetworkInterfaceIPAssignmentMode string
+
+const (
+	// NetworkInterfaceIPAssignmentModeStaticPool indicates IP address is assigned from a static pool.
+	NetworkInterfaceIPAssignmentModeStaticPool NetworkInterfaceIPAssignmentMode = "staticpool"
+
+	// NetworkInterfaceIPAssignmentModeDHCP indicates IP address should be obtained via DHCP.
+	NetworkInterfaceIPAssignmentModeDHCP NetworkInterfaceIPAssignmentMode = "dhcp"
+
+	// NetworkInterfaceIPAssignmentModeNone indicates no IP assignment should be performed.
+	NetworkInterfaceIPAssignmentModeNone NetworkInterfaceIPAssignmentMode = "none"
 )
 
 // NetworkInterfacePortAllocation describes the settings for network interface port allocation request.
