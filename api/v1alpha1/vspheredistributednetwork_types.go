@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Broadcom. All Rights Reserved.
+// Copyright (c) 2020-2025 Broadcom. All Rights Reserved.
 // Broadcom Confidential. The term "Broadcom" refers to Broadcom Inc.
 // and/or its subsidiaries.
 
@@ -28,6 +28,9 @@ const (
 	IPAssignmentModeDHCP IPAssignmentModeType = "dhcp"
 	// IPAssignmentModeStaticPool indicates IP address is assigned from a static pool of IP addresses.
 	IPAssignmentModeStaticPool IPAssignmentModeType = "staticpool"
+	// IPAssignmentModeNone indicates that no IP assignment will be performed.
+	// The operator will not assign an IP and no DHCP client will be configured.
+	IPAssignmentModeNone IPAssignmentModeType = "none"
 )
 
 // VSphereDistributedNetworkCondition describes the state of a VSphereDistributedNetwork at a certain point.
@@ -51,20 +54,25 @@ type VSphereDistributedNetworkSpec struct {
 	PortGroupID string `json:"portGroupID"`
 
 	// IPAssignmentMode to use for network interfaces. If unset, defaults to IPAssignmentModeStaticPool.
-	// In case of IPAssignmentModeDHCP, IPPools, Gateway and SubnetMask fields are ignored.
+	// For IPAssignmentModeDHCP and IPAssignmentModeNone, the IPPools, Gateway and SubnetMask
+	// fields should be empty/unset. When using IPAssignmentModeNone, no IP will be assigned
+	// and no DHCP client will be configured.
 	// +optional
 	IPAssignmentMode IPAssignmentModeType `json:"ipAssignmentMode,omitempty"`
 
-	// IPPools references list of IPPool objects. This field should be set to empty list for
-	// IPAssignmentModeDHCP IPAssignmentMode.
+	// IPPools references list of IPPool objects. This field should only be set when using
+	// IPAssignmentModeStaticPool. For all other modes (IPAssignmentModeDHCP, IPAssignmentModeNone), this should be set
+	// to an empty list.
 	IPPools []IPPoolReference `json:"ipPools"`
 
-	// Gateway setting to use for network interfaces. This field should be set to empty string
-	// for IPAssignmentModeDHCP IPAssignmentMode.
+	// Gateway setting to use for network interfaces. This field should only be set when using
+	// IPAssignmentModeStaticPool. For all other modes (IPAssignmentModeDHCP, IPAssignmentModeNone), this should be set
+	// to an empty string.
 	Gateway string `json:"gateway"`
 
-	// SubnetMask setting to use for network interfaces. This field should be set to empty string
-	// for IPAssignmentModeDHCP IPAssignmentMode.
+	// SubnetMask setting to use for network interfaces. This field should only be set when using
+	// IPAssignmentModeStaticPool. For all other modes (IPAssignmentModeDHCP, IPAssignmentModeNone), this should be set
+	// to an empty string.
 	SubnetMask string `json:"subnetMask"`
 }
 
