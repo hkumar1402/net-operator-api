@@ -76,10 +76,70 @@ type VSphereDistributedNetworkSpec struct {
 	SubnetMask string `json:"subnetMask"`
 }
 
+// VLANType represents the type of VLAN configuration
+type VLANType string
+
+const (
+	// VLANTypeStandard represents a standard VLAN configuration with a single VLAN ID
+	VLANTypeStandard VLANType = "standard"
+	// VLANTypeTrunk represents a VLAN trunk configuration that allows multiple VLANs
+	VLANTypeTrunk VLANType = "trunk"
+	// VLANTypePrivate represents a private VLAN configuration
+	VLANTypePrivate VLANType = "private"
+)
+
+// VLANTrunkRange represents a range of VLAN IDs for trunk configuration
+type VLANTrunkRange struct {
+	// Start represents the beginning of the VLAN ID range (inclusive).
+	Start int32 `json:"start"`
+
+	// End represents the end of the VLAN ID range (inclusive).
+	End int32 `json:"end"`
+}
+
+// VlanSpec represents the VLAN configuration.
+type VlanSpec struct {
+	// Type indicates the type of VLAN configuration (standard, trunk, or private).
+	Type VLANType `json:"type"`
+
+	// VlanID specifies the VLAN ID when Type is VLANTypeStandard.
+	// This field is ignored for other VLAN types.
+	// Possible values:
+	// - A value of 0 indicates there is no VLAN configuration for the port.
+	// - A value from 1 to 4094 specifies a VLAN ID for the port.
+	// +optional
+	VlanID *int32 `json:"vlanID,omitempty"`
+
+	// TrunkRange specifies the ranges of allowed VLANs when Type is VLANTypeTrunk.
+	// This field is ignored for other VLAN types.
+	// Each range's Start and End values must be between 0 and 4094 inclusive.
+	// Overlapping ranges are allowed.
+	// +optional
+	TrunkRange []VLANTrunkRange `json:"trunkRange,omitempty"`
+
+	// PrivateVlanID specifies the private VLAN ID when Type is VLANTypePrivate.
+	// This field is ignored for other VLAN types.
+	// +optional
+	PrivateVlanID *int32 `json:"privateVlanID,omitempty"`
+}
+
+// VSphereDistributedPortConfig represents the port-level configuration for a vSphere Distributed Network
+type VSphereDistributedPortConfig struct {
+	// Vlan represents the VLAN configuration for this port.
+	// If unset, indicates that no VLAN configuration has been retrieved yet for this port.
+	// +optional
+	Vlan *VlanSpec `json:"vlan,omitempty"`
+}
+
 // VSphereDistributedNetworkStatus defines the observed state of VSphereDistributedNetwork.
 type VSphereDistributedNetworkStatus struct {
 	// Conditions is an array of current observed vSphere Distributed network conditions.
 	Conditions []VSphereDistributedNetworkCondition `json:"conditions,omitempty"`
+
+	// DefaultPortConfig represents the default port-level configuration that applies to all ports
+	// unless overridden at the individual port level.
+	// +optional
+	DefaultPortConfig *VSphereDistributedPortConfig `json:"defaultPortConfig,omitempty"`
 }
 
 // +genclient
