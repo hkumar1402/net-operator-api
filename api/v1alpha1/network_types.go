@@ -1,11 +1,34 @@
-// Copyright (c) 2020-2024 Broadcom. All Rights Reserved.
+// Copyright (c) 2020-2025 Broadcom. All Rights Reserved.
 // Broadcom Confidential. The term "Broadcom" refers to Broadcom Inc.
 // and/or its subsidiaries.
 
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+const (
+	// NetworkProtectionFinalizer allows the Controller to clean up resources and ensure
+	// that no NetworkInterfaces are actively using this Network before deletion.
+	NetworkProtectionFinalizer = "network.netoperator.vmware.com/network-protection"
+)
+
+type NetworkConditionType string
+
+const (
+	// NetworkDeletionBlocked indicates that the Network cannot be deleted, because
+	// there may be some consumers (NetworkInterface) still actively using it.
+	NetworkDeletionBlocked NetworkConditionType = "DeletionBlocked"
+)
+
+type NetworkConditionReason string
+
+const (
+	// NetworkDeletionBlockedReasonInUse indicates that the Network deletion is blocked
+	// because there are NetworkInterfaces still actively using this Network.
+	NetworkDeletionBlockedReasonInUse NetworkConditionReason = "NetworkInUse"
 )
 
 // NetworkProviderReference contains info to locate a network provider object.
@@ -50,8 +73,27 @@ type NetworkSpec struct {
 	NTP []string `json:"ntp,omitempty"`
 }
 
-// NetworkStatus is unused. This is because Network is purely a configuration resource.
+// NetworkCondition describes the state of a Network at a certain point.
+type NetworkCondition struct {
+	// Type is the type of network condition.
+	Type NetworkConditionType `json:"type"`
+	// Status is the status of the condition.
+	// Can be True, False, Unknown.
+	Status corev1.ConditionStatus `json:"status"`
+	// LastTransitionTime is the timestamp corresponding to the last status
+	// change of this condition.
+	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty"`
+	// Reason is a machine understandable string that gives the reason for condition's last transition.
+	Reason NetworkConditionReason `json:"reason,omitempty"`
+	// Message is a human-readable message indicating details about last transition.
+	Message string `json:"message,omitempty"`
+}
+
+// NetworkStatus defines the observed state of Network.
 type NetworkStatus struct {
+	// Conditions is an array of current observed network conditions.
+	// +optional
+	Conditions []NetworkCondition `json:"conditions,omitempty"`
 }
 
 // NetworkReference is an object that points to a Network.
@@ -72,6 +114,7 @@ type NetworkReference struct {
 // Network is the Schema for the networks API.
 // A Network describes type, class and common attributes of a network available
 // in a namespace. A NetworkInterface resource references a Network.
+// +kubebuilder:subresource:status
 type Network struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
