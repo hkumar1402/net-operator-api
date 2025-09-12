@@ -63,6 +63,9 @@ const (
 	// NetworkInterfaceFailureReasonCannotAllocPort indicates NetworkInterface is in failed state because
 	// port cannot be allocated for network interface on the network.
 	NetworkInterfaceFailureReasonCannotAllocPort NetworkInterfaceConditionReason = "CannotAllocPort"
+	// NetworkInterfaceFailureReasonNetworkDeleted indicates NetworkInterface is in failed state because
+	// the underlying Network resource has been deleted.
+	NetworkInterfaceFailureReasonNetworkDeleted NetworkInterfaceConditionReason = "NetworkDeleted"
 )
 
 // NetworkInterfaceCondition describes the state of a NetworkInterface at a certain point.
